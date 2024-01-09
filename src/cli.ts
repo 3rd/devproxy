@@ -1,18 +1,9 @@
 import { Command } from "commander";
 import { resolve } from "path";
-import Config from "./config";
-import Proxy from "./proxy";
+import { Proxy } from "./proxy";
 import { canAccessFile } from "./util";
-import type { TRule } from "./types";
-
-type TFileConfig = {
-  open?: string;
-  port?: number;
-  chromiumBinary?: string;
-  rules?: TRule[];
-  ws?: { enabled: boolean; forward?: Record<string, string> };
-  profilePath?: string;
-};
+import { buildConfig } from "./config";
+import type { Config } from "./types";
 
 const options: [string, string, string?, boolean?][] = [
   ["-c, --config <config>", "config file", "config.js", true],
@@ -35,10 +26,10 @@ const run = async () => {
     throw new Error(`Unable to access config file: ${opts.config as string}`);
   }
 
-  const fileConfig: TFileConfig = require(resolve(process.cwd(), opts.config));
+  const fileConfig: Partial<Config> = require(resolve(process.cwd(), opts.config));
 
-  const config = new Config({
-    openUrl: opts.open ?? fileConfig.open,
+  const config = buildConfig({
+    open: opts.open ?? fileConfig.open,
     chromiumBinary: opts.chromiumBinary ?? fileConfig.chromiumBinary,
     port: opts.port ?? fileConfig.port,
     rules: fileConfig.rules,
@@ -55,7 +46,7 @@ const run = async () => {
   console.log(`Proxy up on port: ${proxy.port}`);
   console.log(`Cert fingerprint: ${proxy.fingerprint}`);
 
-  if (config.openUrl) proxy.spawnChromium();
+  if (config.open) proxy.spawnChromium();
 };
 
 export default { run };

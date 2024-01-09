@@ -1,11 +1,10 @@
 import child_process from "child_process";
 import * as mockttp from "mockttp";
-import type { TStoredRequest } from "./types";
-import type Config from "./config";
+import type { Config, Request } from "./types";
 
-class Proxy {
+export class Proxy {
   config: Config;
-  requests: Record<string, TStoredRequest> = {};
+  requests: Record<string, Request> = {};
   port = 0;
   fingerprint = "";
 
@@ -17,14 +16,13 @@ class Proxy {
     const https = await mockttp.generateCACertificate();
     const server = mockttp.getLocal({
       https,
-      http2: true,
+      http2: "fallback",
       recordTraffic: false,
     });
 
     if (this.config.ws.enabled) {
       if (Object.keys(this.config.ws.forward).length > 0) {
         for (const [from, to] of Object.entries(this.config.ws.forward)) {
-          console.log("ws forward from", from, "to", to);
           server.forAnyWebSocket().forHostname(from).thenForwardTo(to);
         }
       } else {
@@ -50,17 +48,16 @@ class Proxy {
         }
 
         const request = this.requests[response.id];
-        // console.log( proxy response", JSON.stringify({ url: request.url, status: response.statusCode, headers: response.headers, }, null, 2));
 
+        // forgive me master for i have sinned
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-        delete this.requests[response.id]; // forgive me
+        delete this.requests[response.id];
 
         return beforeResponseRules[0]?.beforeResponse?.(request, response) ?? {};
       },
     });
 
-    // TODO: config.port
-    await server.start();
+    await server.start(this.config.port);
     this.port = server.port;
     this.fingerprint = mockttp.generateSPKIFingerprint(https.cert);
   }
@@ -80,14 +77,12 @@ class Proxy {
       `--disable-web-security`,
       `--proxy-server=127.0.0.1:${this.port}`,
       `--ignore-certificate-errors-spki-list=${this.fingerprint}`,
-      // TODO: config.fresh -> mktemp, trap cleanup
       `--user-data-dir=${this.config.profilePath}`,
       `--proxy-bypass-list=<-loopback>`,
-      this.config.openUrl,
+      this.config.open,
     ];
+
     console.log("Launching", command, args);
     child_process.spawn(command, args);
   }
 }
-
-export default Proxy;

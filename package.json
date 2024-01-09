@@ -19,6 +19,6 @@
   },
   "dependencies": {
     "commander": "^11.1.0",
-    "mockttp": "^3.10.0"
+    "mockttp": "^3.10.1"
   }
 }
