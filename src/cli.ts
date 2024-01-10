@@ -1,15 +1,16 @@
 import { Command } from "commander";
 import { resolve } from "path";
+import type { Config } from "./types";
+import { buildConfig } from "./config";
 import { Proxy } from "./proxy";
 import { canAccessFile } from "./util";
-import { buildConfig } from "./config";
-import type { Config } from "./types";
 
 const options: [string, string, string?, boolean?][] = [
   ["-c, --config <config>", "config file", "config.js", true],
   ["-p, --port <port>", "custom proxy port"],
   ["--chromium-binary <chromium-binary>", "specify chromium binary"],
   ["-o, --open <url>", "open url"],
+  ["--disable-web-security <boolean>", "enable/disable web security", "false"],
 ];
 
 const run = async () => {
@@ -38,6 +39,7 @@ const run = async () => {
       forward: fileConfig.ws?.forward ?? {},
     },
     profilePath: fileConfig.profilePath,
+    disableWebSecurity: opts.disableWebSecurity === "true",
   });
 
   const proxy = new Proxy(config);

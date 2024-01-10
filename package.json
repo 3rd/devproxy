@@ -1,11 +1,14 @@
 {
-  "name": "devproxy",
-  "version": "1.0.0",
-  "private": true,
+  "name": "@andrei.fyi/devproxy",
+  "version": "1.0.2",
   "main": "dist/main.js",
   "bin": {
-    "devproxy": "./bin/main.js"
+    "devproxy": "bin/main.js"
   },
+  "files": [
+    "dist",
+    "bin"
+  ],
   "scripts": {
     "dev": "ts-node-dev --watch --respawn src/main",
     "build": "tsc",

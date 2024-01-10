@@ -74,7 +74,7 @@ export class Proxy {
   spawnChromium() {
     const command = this.config.chromiumBinary;
     const args = [
-      `--disable-web-security`,
+      ...(this.config.disableWebSecurity ? ["--disable-web-security"] : []),
       `--proxy-server=127.0.0.1:${this.port}`,
       `--ignore-certificate-errors-spki-list=${this.fingerprint}`,
       `--user-data-dir=${this.config.profilePath}`,

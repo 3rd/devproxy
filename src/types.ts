@@ -12,6 +12,7 @@ export type Config = {
   };
   profilePath: string;
   port?: number;
+  disableWebSecurity?: boolean;
 };
 
 export type Headers = {
@@ -64,6 +65,6 @@ export type Rule = {
   beforeRequest?: (request: Request) => MaybePromise<CallbackRequestResult>;
   beforeResponse?: (
     request: Request,
-    response: mockttp.requestHandlers.PassThroughResponse
+    response: mockttp.requestHandlers.PassThroughResponse,
   ) => MaybePromise<CallbackResponseResult>;
 };

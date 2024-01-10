@@ -16,5 +16,6 @@ export const buildConfig = (config: Partial<Config>): Config => {
     },
     fresh: config.fresh ?? false,
     profilePath: config.profilePath ?? DEFAULT_PROFILE_PATH,
+    disableWebSecurity: config.disableWebSecurity ?? false,
   } satisfies Config;
 };

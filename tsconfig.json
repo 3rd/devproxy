@@ -9,8 +9,7 @@
     "strict": true,
     "importHelpers": true,
     "skipLibCheck": true,
-    "moduleResolution": "node",
-    "noEmit": true
+    "moduleResolution": "node"
   },
   "include": ["src/*", "*.js"]
 }
